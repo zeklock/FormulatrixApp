@@ -1,3 +1,4 @@
 {
-    "dotnet.defaultSolution": "FormulatrixApp.sln"
+    "dotnet.defaultSolution": "FormulatrixApp.sln",
+    "editor.formatOnSave": true
 }
