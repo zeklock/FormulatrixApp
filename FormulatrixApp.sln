@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogicExercise", "LogicExercise\LogicExercise.csproj", "{AA85869B-C5CC-408A-845F-4424C9978443}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NumericTypes", "NumericTypes\NumericTypes.csproj", "{FDF63958-22C0-44C4-8C08-26AA6B281861}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,18 @@ Global
 		{AA85869B-C5CC-408A-845F-4424C9978443}.Release|x64.Build.0 = Release|Any CPU
 		{AA85869B-C5CC-408A-845F-4424C9978443}.Release|x86.ActiveCfg = Release|Any CPU
 		{AA85869B-C5CC-408A-845F-4424C9978443}.Release|x86.Build.0 = Release|Any CPU
+		{FDF63958-22C0-44C4-8C08-26AA6B281861}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDF63958-22C0-44C4-8C08-26AA6B281861}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDF63958-22C0-44C4-8C08-26AA6B281861}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FDF63958-22C0-44C4-8C08-26AA6B281861}.Debug|x64.Build.0 = Debug|Any CPU
+		{FDF63958-22C0-44C4-8C08-26AA6B281861}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FDF63958-22C0-44C4-8C08-26AA6B281861}.Debug|x86.Build.0 = Debug|Any CPU
+		{FDF63958-22C0-44C4-8C08-26AA6B281861}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDF63958-22C0-44C4-8C08-26AA6B281861}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDF63958-22C0-44C4-8C08-26AA6B281861}.Release|x64.ActiveCfg = Release|Any CPU
+		{FDF63958-22C0-44C4-8C08-26AA6B281861}.Release|x64.Build.0 = Release|Any CPU
+		{FDF63958-22C0-44C4-8C08-26AA6B281861}.Release|x86.ActiveCfg = Release|Any CPU
+		{FDF63958-22C0-44C4-8C08-26AA6B281861}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
