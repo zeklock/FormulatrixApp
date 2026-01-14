@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NumericTypes", "NumericType
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringsAndCharacters", "StringsAndCharacters\StringsAndCharacters.csproj", "{D8A69641-AA1E-418D-A7D3-E2A750908727}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arrays", "Arrays\Arrays.csproj", "{B3F54E5B-DFE2-4B43-80CC-73C31A0AFB7E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,18 @@ Global
 		{D8A69641-AA1E-418D-A7D3-E2A750908727}.Release|x64.Build.0 = Release|Any CPU
 		{D8A69641-AA1E-418D-A7D3-E2A750908727}.Release|x86.ActiveCfg = Release|Any CPU
 		{D8A69641-AA1E-418D-A7D3-E2A750908727}.Release|x86.Build.0 = Release|Any CPU
+		{B3F54E5B-DFE2-4B43-80CC-73C31A0AFB7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3F54E5B-DFE2-4B43-80CC-73C31A0AFB7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3F54E5B-DFE2-4B43-80CC-73C31A0AFB7E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B3F54E5B-DFE2-4B43-80CC-73C31A0AFB7E}.Debug|x64.Build.0 = Debug|Any CPU
+		{B3F54E5B-DFE2-4B43-80CC-73C31A0AFB7E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B3F54E5B-DFE2-4B43-80CC-73C31A0AFB7E}.Debug|x86.Build.0 = Debug|Any CPU
+		{B3F54E5B-DFE2-4B43-80CC-73C31A0AFB7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3F54E5B-DFE2-4B43-80CC-73C31A0AFB7E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3F54E5B-DFE2-4B43-80CC-73C31A0AFB7E}.Release|x64.ActiveCfg = Release|Any CPU
+		{B3F54E5B-DFE2-4B43-80CC-73C31A0AFB7E}.Release|x64.Build.0 = Release|Any CPU
+		{B3F54E5B-DFE2-4B43-80CC-73C31A0AFB7E}.Release|x86.ActiveCfg = Release|Any CPU
+		{B3F54E5B-DFE2-4B43-80CC-73C31A0AFB7E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
