@@ -22,11 +22,17 @@ public class NumberExercise
         if (x % 3 == 0)
             word += "foo";
 
+        if (x % 4 == 0)
+            word += "baz";
+
         if (x % 5 == 0)
             word += "bar";
 
         if (x % 7 == 0)
             word += "jazz";
+
+        if (x % 9 == 0)
+            word += "huzz";
 
         return word;
     }

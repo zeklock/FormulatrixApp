@@ -20,3 +20,7 @@ Continuing on the previous question. Add the following rules
 print ```"jazz"```, if ```x``` is divisible by ```7```
 <br>
 This means for ```x = 21``` ```x = 35``` and ```x = 105``` the program should print ```"foojazz"```, ```"barjazz"``` and ```"foobarjazz"``` respectively.
+
+## 3rd Excercise
+
+Continuing on the previous question. Using the same divisible logic, use the table below as the rules  ```3: "foo"```  ```4: "baz"```  ```5: "bar"```  ```7: "jazz"```  ```9: "huzz"```
