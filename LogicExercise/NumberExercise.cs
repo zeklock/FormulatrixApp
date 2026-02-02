@@ -2,8 +2,12 @@ namespace LogicExercise;
 
 public class NumberExercise
 {
-    public static void Print(int n)
+    private Dictionary<int, string>? _rules;
+
+    public void Print(int n)
     {
+        Console.Write($"n({n}) : ");
+
         for (int i = 1; i <= n; i++)
         {
             if (i > 1)
@@ -15,25 +19,36 @@ public class NumberExercise
         }
     }
 
-    public static string Convert(int x)
+    private string Convert(int x)
     {
         string word = string.Empty;
 
-        if (x % 3 == 0)
-            word += "foo";
+        if (_rules is null)
+            return word;
 
-        if (x % 4 == 0)
-            word += "baz";
-
-        if (x % 5 == 0)
-            word += "bar";
-
-        if (x % 7 == 0)
-            word += "jazz";
-
-        if (x % 9 == 0)
-            word += "huzz";
+        foreach (var rule in _rules)
+        {
+            if (x % rule.Key == 0)
+            {
+                word += rule.Value;
+            }
+        }
 
         return word;
+    }
+
+    public void AddRule(int input, string output)
+    {
+        _rules ??= new Dictionary<int, string>();
+        _rules[input] = output;
+        SortRules();
+    }
+
+    private void SortRules()
+    {
+        if (_rules is not null)
+        {
+            _rules = _rules.OrderBy(r => r.Key).ToDictionary(r => r.Key, r => r.Value);
+        }
     }
 }
