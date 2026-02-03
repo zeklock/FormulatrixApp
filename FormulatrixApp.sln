@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Threading", "Threading\Thre
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiThreading", "MultiThreading\MultiThreading.csproj", "{C643730E-FF1D-4DA4-9736-29887B7B7489}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TasksThreading", "TasksThreading\TasksThreading.csproj", "{1A532BAA-C0B2-47E3-BA25-5C615C4267E1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -209,6 +211,18 @@ Global
 		{C643730E-FF1D-4DA4-9736-29887B7B7489}.Release|x64.Build.0 = Release|Any CPU
 		{C643730E-FF1D-4DA4-9736-29887B7B7489}.Release|x86.ActiveCfg = Release|Any CPU
 		{C643730E-FF1D-4DA4-9736-29887B7B7489}.Release|x86.Build.0 = Release|Any CPU
+		{1A532BAA-C0B2-47E3-BA25-5C615C4267E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A532BAA-C0B2-47E3-BA25-5C615C4267E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A532BAA-C0B2-47E3-BA25-5C615C4267E1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1A532BAA-C0B2-47E3-BA25-5C615C4267E1}.Debug|x64.Build.0 = Debug|Any CPU
+		{1A532BAA-C0B2-47E3-BA25-5C615C4267E1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1A532BAA-C0B2-47E3-BA25-5C615C4267E1}.Debug|x86.Build.0 = Debug|Any CPU
+		{1A532BAA-C0B2-47E3-BA25-5C615C4267E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A532BAA-C0B2-47E3-BA25-5C615C4267E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A532BAA-C0B2-47E3-BA25-5C615C4267E1}.Release|x64.ActiveCfg = Release|Any CPU
+		{1A532BAA-C0B2-47E3-BA25-5C615C4267E1}.Release|x64.Build.0 = Release|Any CPU
+		{1A532BAA-C0B2-47E3-BA25-5C615C4267E1}.Release|x86.ActiveCfg = Release|Any CPU
+		{1A532BAA-C0B2-47E3-BA25-5C615C4267E1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
