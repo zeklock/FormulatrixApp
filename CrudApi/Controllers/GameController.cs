@@ -16,57 +16,78 @@ public class GameController : ControllerBase
     }
 
     [HttpGet()]
-    public IActionResult GetAllGames()
+    public async Task<IActionResult> GetAll()
     {
-        var result = _service.GetAllGames();
+        var result = await _service.GetAllGamesAsync();
 
         if (!result.IsSuccess)
-            return NotFound();
+            return NotFound("No games found.");
 
         return Ok(result);
     }
 
     [HttpGet("{id}")]
-    public IActionResult GetGameById(Guid id)
+    public async Task<IActionResult> Get(Guid id)
     {
-        var result = _service.GetGameById(id);
+        var result = await _service.GetGameByIdAsync(id);
 
         if (!result.IsSuccess)
-            return NotFound();
+            return NotFound("No games found.");
 
         return Ok(result);
     }
 
     [HttpPost()]
-    public IActionResult CreateGame(CreateGameDto createGameDto)
+    public async Task<IActionResult> Create(GameCreateDto gameCreateDto)
     {
-        var result = _service.CreateGame(createGameDto);
+        try
+        {
+            var result = await _service.CreateGameAsync(gameCreateDto);
 
-        if (!result.IsSuccess)
-            return BadRequest(result.ErrorMessage);
+            if (!result.IsSuccess)
+                return BadRequest(result.ErrorMessage);
 
-        return Created($"/api/games/{result.Data?.Id}", result);
+            return Created($"/api/games/{result.Data?.Id}", result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpPut("{id}")]
-    public IActionResult UpdateGame(Guid id, UpdateGameDto updateGameDto)
+    public async Task<IActionResult> Update(Guid id, GameUpdateDto gameUpdateDto)
     {
-        var result = _service.UpdateGame(id, updateGameDto);
+        try
+        {
+            var result = await _service.UpdateGameAsync(id, gameUpdateDto);
 
-        if (!result.IsSuccess)
-            return NotFound();
+            if (!result.IsSuccess)
+                return NotFound("No games found.");
 
-        return Ok(result);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpDelete("{id}")]
-    public IActionResult DeleteGame(Guid id)
+    public async Task<IActionResult> Delete(Guid id)
     {
-        var result = _service.DeleteGame(id);
+        try
+        {
+            var result = await _service.DeleteGameAsync(id);
 
-        if (!result.IsSuccess)
-            return NotFound();
+            if (!result.IsSuccess)
+                return NotFound("No games found.");
 
-        return NoContent();
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 }

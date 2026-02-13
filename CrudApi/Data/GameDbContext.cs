@@ -5,11 +5,21 @@ namespace CrudApi.Data;
 
 public class GameDbContext : DbContext
 {
+    public GameDbContext(DbContextOptions<GameDbContext> options) : base(options) { }
+
     public DbSet<Game> Games { get; set; }
     public DbSet<Genre> Genres { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        optionsBuilder.UseSqlite("Data Source=Games.db");
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<Game>()
+            .HasIndex(g => g.Title)
+            .IsUnique();
+
+        modelBuilder.Entity<Genre>()
+            .HasIndex(g => g.Name)
+            .IsUnique();
     }
 }

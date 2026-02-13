@@ -1,109 +1,84 @@
+using AutoMapper;
 using CrudApi.Data;
 using CrudApi.Dtos.Genres;
 using CrudApi.Entities;
-using CrudApi.Helpers;
 using CrudApi.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace CrudApi.Services;
 
 public class GenreService : IGenreService
 {
-    public Result<IEnumerable<GenreDto>> GetAllGenres()
-    {
-        using (GameDbContext context = new GameDbContext())
-        {
-            IEnumerable<GenreDto> genres = context.Genres.Select(g => new GenreDto
-            {
-                Id = g.Id,
-                Name = g.Name,
-                CreatedAt = g.CreatedAt,
-                UpdatedAt = g.UpdatedAt
-            }).ToList();
+    private readonly GameDbContext _context;
+    private readonly IMapper _mapper;
 
-            return Result<IEnumerable<GenreDto>>.Success(genres);
-        }
+    public GenreService(GameDbContext context, IMapper mapper)
+    {
+        _context = context;
+        _mapper = mapper;
     }
 
-    public Result<GenreDto?> GetGenreById(Guid id)
+    public async Task<ServiceResult<IEnumerable<GenreDto>>> GetAllGenresAsync()
     {
-        using (GameDbContext context = new GameDbContext())
-        {
-            Genre? genre = context.Genres.FirstOrDefault(g => g.Id == id);
+        IEnumerable<GenreDto> genres = await _context.Genres
+            .Select(g => _mapper.Map<GenreDto>(g))
+            .ToListAsync();
 
-            if (genre is null)
-                return Result<GenreDto?>.Failure("Genre not Found.");
-
-            GenreDto result = MapGenreToGenreDto(genre);
-
-            return Result<GenreDto?>.Success(result);
-        }
+        return ServiceResult<IEnumerable<GenreDto>>.Success(genres);
     }
 
-    public Result<GenreDto> CreateGenre(CreateGenreDto createGenreDto)
+    public async Task<ServiceResult<GenreDto?>> GetGenreByIdAsync(Guid id)
     {
-        using (GameDbContext context = new GameDbContext())
-        {
-            Genre newGenre = new Genre
-            {
-                Name = createGenreDto.Name,
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
-            };
+        Genre? genre = await _context.Genres.FirstOrDefaultAsync(g => g.Id == id);
 
-            context.Genres.Add(newGenre);
-            context.SaveChanges();
+        if (genre is null)
+            return ServiceResult<GenreDto?>.Failure("Genre not Found.");
 
-            GenreDto result = MapGenreToGenreDto(newGenre);
+        GenreDto result = _mapper.Map<GenreDto>(genre);
 
-            return Result<GenreDto>.Success(result);
-        }
+        return ServiceResult<GenreDto?>.Success(result);
     }
 
-    public Result<GenreDto?> UpdateGenre(Guid id, UpdateGenreDto updateGenreDto)
+    public async Task<ServiceResult<GenreDto>> CreateGenreAsync(GenreCreateDto genreCreateDto)
     {
-        using (GameDbContext context = new GameDbContext())
-        {
-            Genre? genre = context.Genres.FirstOrDefault(g => g.Id == id);
+        Genre newGenre = _mapper.Map<Genre>(genreCreateDto);
+        newGenre.CreatedAt = DateTime.Now;
+        newGenre.UpdatedAt = DateTime.Now;
 
-            if (genre is null)
-                return Result<GenreDto?>.Failure("Genre not Found.");
+        _context.Genres.Add(newGenre);
+        await _context.SaveChangesAsync();
 
-            genre.Name = updateGenreDto.Name;
-            genre.UpdatedAt = DateTime.Now;
-            context.SaveChanges();
+        GenreDto result = _mapper.Map<GenreDto>(newGenre);
 
-            GenreDto result = MapGenreToGenreDto(genre);
-
-            return Result<GenreDto?>.Success(result);
-        }
+        return ServiceResult<GenreDto>.Success(result);
     }
 
-    public Result<GenreDto> DeleteGenre(Guid id)
+    public async Task<ServiceResult<GenreDto?>> UpdateGenreAsync(Guid id, GenreUpdateDto genreUpdateDto)
     {
-        using (GameDbContext context = new GameDbContext())
-        {
-            Genre? genre = context.Genres.FirstOrDefault(g => g.Id == id);
+        Genre? genre = await _context.Genres.FirstOrDefaultAsync(g => g.Id == id);
 
-            if (genre is null)
-                return Result<GenreDto>.Failure("Genre not Found.");
+        if (genre is null)
+            return ServiceResult<GenreDto?>.Failure("Genre not Found.");
 
-            context.Genres.Remove(genre);
-            context.SaveChanges();
+        _mapper.Map(genreUpdateDto, genre);
+        genre.UpdatedAt = DateTime.Now;
+        await _context.SaveChangesAsync();
 
-            return Result<GenreDto>.Success();
-        }
+        GenreDto result = _mapper.Map<GenreDto>(genre);
+
+        return ServiceResult<GenreDto?>.Success(result);
     }
 
-    private GenreDto MapGenreToGenreDto(Genre genre)
+    public async Task<ServiceResult<bool>> DeleteGenreAsync(Guid id)
     {
-        GenreDto result = new GenreDto
-        {
-            Id = genre.Id,
-            Name = genre.Name,
-            CreatedAt = genre.CreatedAt,
-            UpdatedAt = genre.UpdatedAt
-        };
+        Genre? genre = await _context.Genres.FirstOrDefaultAsync(g => g.Id == id);
 
-        return result;
+        if (genre is null)
+            return ServiceResult<bool>.Failure("Genre not Found.");
+
+        _context.Genres.Remove(genre);
+        await _context.SaveChangesAsync();
+
+        return ServiceResult<bool>.Success();
     }
 }

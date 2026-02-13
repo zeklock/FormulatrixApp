@@ -16,57 +16,78 @@ public class GenreController : ControllerBase
     }
 
     [HttpGet()]
-    public IActionResult GetAllGenres()
+    public async Task<IActionResult> GetAll()
     {
-        var result = _service.GetAllGenres();
+        var result = await _service.GetAllGenresAsync();
 
         if (!result.IsSuccess)
-            return NotFound();
+            return NotFound("No genres found.");
 
         return Ok(result);
     }
 
     [HttpGet("{id}")]
-    public IActionResult GetGenreById(Guid id)
+    public async Task<IActionResult> Get(Guid id)
     {
-        var result = _service.GetGenreById(id);
+        var result = await _service.GetGenreByIdAsync(id);
 
         if (!result.IsSuccess)
-            return NotFound();
+            return NotFound("No genres found.");
 
         return Ok(result);
     }
 
     [HttpPost()]
-    public IActionResult CreateGenre(CreateGenreDto createGenreDto)
+    public async Task<IActionResult> Create(GenreCreateDto genreCreateDto)
     {
-        var result = _service.CreateGenre(createGenreDto);
+        try
+        {
+            var result = await _service.CreateGenreAsync(genreCreateDto);
 
-        if (!result.IsSuccess)
-            return BadRequest(result.ErrorMessage);
+            if (!result.IsSuccess)
+                return BadRequest(result.ErrorMessage);
 
-        return Created($"/api/genres/{result.Data?.Id}", result);
+            return Created($"/api/genres/{result.Data?.Id}", result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpPut("{id}")]
-    public IActionResult UpdateGenre(Guid id, UpdateGenreDto updateGenreDto)
+    public async Task<IActionResult> Update(Guid id, GenreUpdateDto genreUpdateDto)
     {
-        var result = _service.UpdateGenre(id, updateGenreDto);
+        try
+        {
+            var result = await _service.UpdateGenreAsync(id, genreUpdateDto);
 
-        if (!result.IsSuccess)
-            return NotFound();
+            if (!result.IsSuccess)
+                return NotFound("No genres found.");
 
-        return Ok(result);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpDelete("{id}")]
-    public IActionResult DeleteGenre(Guid id)
+    public async Task<IActionResult> Delete(Guid id)
     {
-        var result = _service.DeleteGenre(id);
+        try
+        {
+            var result = await _service.DeleteGenreAsync(id);
 
-        if (!result.IsSuccess)
-            return NotFound();
+            if (!result.IsSuccess)
+                return NotFound("No genres found.");
 
-        return NoContent();
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 }

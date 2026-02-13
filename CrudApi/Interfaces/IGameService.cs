@@ -1,13 +1,13 @@
 using CrudApi.Dtos.Games;
-using CrudApi.Helpers;
+using CrudApi.Services;
 
 namespace CrudApi.Interfaces;
 
 public interface IGameService
 {
-    public Result<IEnumerable<GameDto>> GetAllGames();
-    public Result<GameDto?> GetGameById(Guid id);
-    public Result<GameDto> CreateGame(CreateGameDto game);
-    public Result<GameDto?> UpdateGame(Guid id, UpdateGameDto game);
-    public Result<GameDto> DeleteGame(Guid id);
+    public Task<ServiceResult<IEnumerable<GameDto>>> GetAllGamesAsync();
+    public Task<ServiceResult<GameDto?>> GetGameByIdAsync(Guid id);
+    public Task<ServiceResult<GameDto>> CreateGameAsync(GameCreateDto gameCreateDto);
+    public Task<ServiceResult<GameDto?>> UpdateGameAsync(Guid id, GameUpdateDto gameUpdateDto);
+    public Task<ServiceResult<bool>> DeleteGameAsync(Guid id);
 }

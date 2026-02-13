@@ -1,13 +1,13 @@
 using CrudApi.Dtos.Genres;
-using CrudApi.Helpers;
+using CrudApi.Services;
 
 namespace CrudApi.Interfaces;
 
 public interface IGenreService
 {
-    public Result<IEnumerable<GenreDto>> GetAllGenres();
-    public Result<GenreDto?> GetGenreById(Guid id);
-    public Result<GenreDto> CreateGenre(CreateGenreDto Genre);
-    public Result<GenreDto?> UpdateGenre(Guid id, UpdateGenreDto Genre);
-    public Result<GenreDto> DeleteGenre(Guid id);
+    public Task<ServiceResult<IEnumerable<GenreDto>>> GetAllGenresAsync();
+    public Task<ServiceResult<GenreDto?>> GetGenreByIdAsync(Guid id);
+    public Task<ServiceResult<GenreDto>> CreateGenreAsync(GenreCreateDto Genre);
+    public Task<ServiceResult<GenreDto?>> UpdateGenreAsync(Guid id, GenreUpdateDto Genre);
+    public Task<ServiceResult<bool>> DeleteGenreAsync(Guid id);
 }

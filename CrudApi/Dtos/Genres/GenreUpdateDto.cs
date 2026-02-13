@@ -1,6 +1,6 @@
 namespace CrudApi.Dtos.Genres;
 
-public class UpdateGenreDto
+public class GenreUpdateDto
 {
     public required string Name { get; set; }
 }
