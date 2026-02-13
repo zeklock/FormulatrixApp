@@ -1,6 +1,7 @@
 using CrudApi.Dtos.Games;
 using CrudApi.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace CrudApi.Controllers;
 
@@ -15,37 +16,49 @@ public class GameController : ControllerBase
         _service = service;
     }
 
-    [HttpGet()]
+    [HttpGet]
+    [SwaggerOperation(Summary = "Get all games")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAll()
     {
         var result = await _service.GetAllGamesAsync();
 
         if (!result.IsSuccess)
-            return NotFound("No games found.");
+            return NotFound(result);
 
         return Ok(result);
     }
 
     [HttpGet("{id}")]
+    [SwaggerOperation(Summary = "Get game by id")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(Guid id)
     {
         var result = await _service.GetGameByIdAsync(id);
 
         if (!result.IsSuccess)
-            return NotFound("No games found.");
+            return NotFound(result);
 
         return Ok(result);
     }
 
-    [HttpPost()]
+    [HttpPost]
+    [SwaggerOperation(Summary = "Create game")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Create(GameCreateDto gameCreateDto)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
         try
         {
             var result = await _service.CreateGameAsync(gameCreateDto);
 
             if (!result.IsSuccess)
-                return BadRequest(result.ErrorMessage);
+                return BadRequest(result);
 
             return Created($"/api/games/{result.Data?.Id}", result);
         }
@@ -56,14 +69,20 @@ public class GameController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [SwaggerOperation(Summary = "Update game")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(Guid id, GameUpdateDto gameUpdateDto)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
         try
         {
             var result = await _service.UpdateGameAsync(id, gameUpdateDto);
 
             if (!result.IsSuccess)
-                return NotFound("No games found.");
+                return NotFound(result);
 
             return Ok(result);
         }
@@ -74,6 +93,9 @@ public class GameController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [SwaggerOperation(Summary = "Delete game")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id)
     {
         try
@@ -81,7 +103,7 @@ public class GameController : ControllerBase
             var result = await _service.DeleteGameAsync(id);
 
             if (!result.IsSuccess)
-                return NotFound("No games found.");
+                return NotFound(result);
 
             return NoContent();
         }

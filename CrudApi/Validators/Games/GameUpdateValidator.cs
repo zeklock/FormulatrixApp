@@ -1,0 +1,17 @@
+using CrudApi.Dtos.Games;
+using FluentValidation;
+
+namespace CrudApi.Validators.Games;
+
+public class GameUpdateValidator : AbstractValidator<GameUpdateDto>
+{
+    public GameUpdateValidator()
+    {
+        RuleFor(g => g.Title)
+            .NotEmpty().WithMessage("Title is required.");
+
+        RuleFor(g => g.ReleaseYear)
+            .NotEmpty().WithMessage("Release year is required.")
+            .InclusiveBetween(1900, DateTime.Now.Year).WithMessage("Release year must be between 1900 and current year.");
+    }
+}

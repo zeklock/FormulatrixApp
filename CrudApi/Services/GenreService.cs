@@ -32,7 +32,7 @@ public class GenreService : IGenreService
         Genre? genre = await _context.Genres.FirstOrDefaultAsync(g => g.Id == id);
 
         if (genre is null)
-            return ServiceResult<GenreDto?>.Failure("Genre not Found.");
+            return ServiceResult<GenreDto?>.Failure("No genre found.");
 
         GenreDto result = _mapper.Map<GenreDto>(genre);
 
@@ -58,7 +58,7 @@ public class GenreService : IGenreService
         Genre? genre = await _context.Genres.FirstOrDefaultAsync(g => g.Id == id);
 
         if (genre is null)
-            return ServiceResult<GenreDto?>.Failure("Genre not Found.");
+            return ServiceResult<GenreDto?>.Failure("No genre found.");
 
         _mapper.Map(genreUpdateDto, genre);
         genre.UpdatedAt = DateTime.Now;
@@ -74,7 +74,7 @@ public class GenreService : IGenreService
         Genre? genre = await _context.Genres.FirstOrDefaultAsync(g => g.Id == id);
 
         if (genre is null)
-            return ServiceResult<bool>.Failure("Genre not Found.");
+            return ServiceResult<bool>.Failure("No genre found.");
 
         _context.Genres.Remove(genre);
         await _context.SaveChangesAsync();

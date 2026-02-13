@@ -21,6 +21,7 @@ public class GameService : IGameService
     public async Task<ServiceResult<IEnumerable<GameDto>>> GetAllGamesAsync()
     {
         IEnumerable<GameDto> games = await _context.Games
+            .Include(g => g.Genre)
             .Select(g => _mapper.Map<GameDto>(g))
             .ToListAsync();
 
@@ -32,7 +33,7 @@ public class GameService : IGameService
         Game? game = await _context.Games.FirstOrDefaultAsync(g => g.Id == id);
 
         if (game is null)
-            return ServiceResult<GameDto?>.Failure("Game not Found.");
+            return ServiceResult<GameDto?>.Failure("No game found.");
 
         GameDto result = _mapper.Map<GameDto>(game);
 
@@ -41,6 +42,11 @@ public class GameService : IGameService
 
     public async Task<ServiceResult<GameDto>> CreateGameAsync(GameCreateDto gameCreateDto)
     {
+        bool titleExists = await TitleExistsAsync(gameCreateDto.Title);
+
+        if (titleExists)
+            return ServiceResult<GameDto>.Failure("Title already exists.");
+
         Game newGame = _mapper.Map<Game>(gameCreateDto);
         newGame.CreatedAt = DateTime.Now;
         newGame.UpdatedAt = DateTime.Now;
@@ -64,10 +70,15 @@ public class GameService : IGameService
 
     public async Task<ServiceResult<GameDto?>> UpdateGameAsync(Guid id, GameUpdateDto gameUpdateDto)
     {
+        bool titleExists = await TitleExistsAsync(gameUpdateDto.Title, id);
+
+        if (titleExists)
+            return ServiceResult<GameDto?>.Failure("Title already exists.");
+
         Game? game = await _context.Games.FirstOrDefaultAsync(g => g.Id == id);
 
         if (game is null)
-            return ServiceResult<GameDto?>.Failure("Game not Found.");
+            return ServiceResult<GameDto?>.Failure("No game found.");
 
         if (gameUpdateDto.GenreId is not null)
         {
@@ -92,11 +103,20 @@ public class GameService : IGameService
         Game? game = await _context.Games.FirstOrDefaultAsync(g => g.Id == id);
 
         if (game is null)
-            return ServiceResult<bool>.Failure("Game not Found.");
+            return ServiceResult<bool>.Failure("No game found.");
 
         _context.Games.Remove(game);
         await _context.SaveChangesAsync();
 
-        return ServiceResult<bool>.Success();
+        return ServiceResult<bool>.Success(true);
+    }
+
+    public async Task<bool> TitleExistsAsync(string title, Guid? exceptId = null)
+    {
+        bool result = await _context.Games
+            .Where(g => g.Id != exceptId)
+            .AnyAsync(g => string.Equals(g.Title.ToLower(), title.ToLower()));
+
+        return result;
     }
 }
