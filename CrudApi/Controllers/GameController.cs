@@ -50,9 +50,6 @@ public class GameController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Create(GameCreateDto gameCreateDto)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
         try
         {
             var result = await _service.CreateGameAsync(gameCreateDto);
@@ -74,9 +71,6 @@ public class GameController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(Guid id, GameUpdateDto gameUpdateDto)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
         try
         {
             var result = await _service.UpdateGameAsync(id, gameUpdateDto);

@@ -50,9 +50,6 @@ public class GenreController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Create(GenreCreateDto genreCreateDto)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
         try
         {
             var result = await _service.CreateGenreAsync(genreCreateDto);
@@ -74,9 +71,6 @@ public class GenreController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(Guid id, GenreUpdateDto genreUpdateDto)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
         try
         {
             var result = await _service.UpdateGenreAsync(id, genreUpdateDto);
