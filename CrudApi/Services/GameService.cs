@@ -30,7 +30,9 @@ public class GameService : IGameService
 
     public async Task<ServiceResult<GameDto?>> GetGameByIdAsync(Guid id)
     {
-        Game? game = await _context.Games.FirstOrDefaultAsync(g => g.Id == id);
+        Game? game = await _context.Games
+            .Include(g => g.Genre)
+            .FirstOrDefaultAsync(g => g.Id == id);
 
         if (game is null)
             return ServiceResult<GameDto?>.Failure("No game found.");
@@ -57,7 +59,13 @@ public class GameService : IGameService
                 .FirstOrDefaultAsync(g => g.Id == gameCreateDto.GenreId);
 
             if (genre is not null)
+            {
                 newGame.Genre = genre;
+            }
+            else
+            {
+                newGame.GenreId = null;
+            }
         }
 
         _context.Games.Add(newGame);
@@ -86,7 +94,13 @@ public class GameService : IGameService
                 .FirstOrDefaultAsync(g => g.Id == gameUpdateDto.GenreId);
 
             if (genre is not null)
+            {
                 game.Genre = genre;
+            }
+            else
+            {
+                game.GenreId = null;
+            }
         }
 
         _mapper.Map(gameUpdateDto, game);

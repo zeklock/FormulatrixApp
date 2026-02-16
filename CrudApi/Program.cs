@@ -1,8 +1,10 @@
 using CrudApi.Data;
 using CrudApi.Dtos.Games;
+using CrudApi.Dtos.Genres;
 using CrudApi.Interfaces;
 using CrudApi.Services;
 using CrudApi.Validators.Games;
+using CrudApi.Validators.Genres;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +33,8 @@ builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddTransient<IValidator<GameCreateDto>, GameCreateValidator>();
 builder.Services.AddTransient<IValidator<GameUpdateDto>, GameUpdateValidator>();
+builder.Services.AddTransient<IValidator<GenreCreateDto>, GenreCreateValidator>();
+builder.Services.AddTransient<IValidator<GenreUpdateDto>, GenreUpdateValidator>();
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();

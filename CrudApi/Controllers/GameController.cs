@@ -25,7 +25,7 @@ public class GameController : ControllerBase
         var result = await _service.GetAllGamesAsync();
 
         if (!result.IsSuccess)
-            return NotFound(result);
+            return BadRequest(result);
 
         return Ok(result);
     }
@@ -39,7 +39,7 @@ public class GameController : ControllerBase
         var result = await _service.GetGameByIdAsync(id);
 
         if (!result.IsSuccess)
-            return NotFound(result);
+            return BadRequest(result);
 
         return Ok(result);
     }
@@ -82,7 +82,7 @@ public class GameController : ControllerBase
             var result = await _service.UpdateGameAsync(id, gameUpdateDto);
 
             if (!result.IsSuccess)
-                return NotFound(result);
+                return BadRequest(result);
 
             return Ok(result);
         }
@@ -103,7 +103,7 @@ public class GameController : ControllerBase
             var result = await _service.DeleteGameAsync(id);
 
             if (!result.IsSuccess)
-                return NotFound(result);
+                return BadRequest(result);
 
             return NoContent();
         }

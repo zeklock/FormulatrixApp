@@ -10,4 +10,5 @@ public interface IGameService
     public Task<ServiceResult<GameDto>> CreateGameAsync(GameCreateDto gameCreateDto);
     public Task<ServiceResult<GameDto?>> UpdateGameAsync(Guid id, GameUpdateDto gameUpdateDto);
     public Task<ServiceResult<bool>> DeleteGameAsync(Guid id);
+    public Task<bool> TitleExistsAsync(string title, Guid? exceptId = null);
 }

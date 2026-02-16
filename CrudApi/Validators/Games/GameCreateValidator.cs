@@ -1,5 +1,4 @@
 using CrudApi.Dtos.Games;
-using CrudApi.Interfaces;
 using FluentValidation;
 
 namespace CrudApi.Validators.Games;
