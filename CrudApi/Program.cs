@@ -33,11 +33,10 @@ builder.Services.AddScoped<IGenreRepository, GenreRepository>();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 // Validator
-builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddTransient<IValidator<GameCreateDto>, GameCreateValidator>();
-builder.Services.AddTransient<IValidator<GameUpdateDto>, GameUpdateValidator>();
-builder.Services.AddTransient<IValidator<GenreCreateDto>, GenreCreateValidator>();
-builder.Services.AddTransient<IValidator<GenreUpdateDto>, GenreUpdateValidator>();
+builder.Services.AddScoped<IValidator<GameCreateDto>, GameCreateValidator>();
+builder.Services.AddScoped<IValidator<GameUpdateDto>, GameUpdateValidator>();
+builder.Services.AddScoped<IValidator<GenreCreateDto>, GenreCreateValidator>();
+builder.Services.AddScoped<IValidator<GenreUpdateDto>, GenreUpdateValidator>();
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();

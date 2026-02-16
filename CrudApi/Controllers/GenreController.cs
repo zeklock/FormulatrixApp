@@ -1,5 +1,7 @@
+using CrudApi.Dtos;
 using CrudApi.Dtos.Genres;
 using CrudApi.Interfaces;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -10,10 +12,14 @@ namespace CrudApi.Controllers;
 public class GenreController : ControllerBase
 {
     private readonly IGenreService _service;
+    private readonly IValidator<GenreCreateDto> _genreCreateDtoValidator;
+    private readonly IValidator<GenreUpdateDto> _genreUpdateDtoValidator;
 
-    public GenreController(IGenreService service)
+    public GenreController(IGenreService service, IValidator<GenreCreateDto> genreCreateDtoValidator, IValidator<GenreUpdateDto> genreUpdateDtoValidator)
     {
         _service = service;
+        _genreCreateDtoValidator = genreCreateDtoValidator;
+        _genreUpdateDtoValidator = genreUpdateDtoValidator;
     }
 
     [HttpGet()]
@@ -22,12 +28,12 @@ public class GenreController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAll()
     {
-        var result = await _service.GetAllGenresAsync();
+        var response = await _service.GetAllAsync();
 
-        if (!result.IsSuccess)
-            return BadRequest(result);
+        if (!response.Success)
+            return NotFound(response);
 
-        return Ok(result);
+        return Ok(response);
     }
 
     [HttpGet("{id}")]
@@ -36,74 +42,73 @@ public class GenreController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(Guid id)
     {
-        var result = await _service.GetGenreByIdAsync(id);
+        var response = await _service.GetByIdAsync(id);
 
-        if (!result.IsSuccess)
-            return BadRequest(result);
+        if (!response.Success)
+            return NotFound(response);
 
-        return Ok(result);
+        return Ok(response);
     }
 
     [HttpPost()]
     [SwaggerOperation(Summary = "Create genre")]
     [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Create(GenreCreateDto genreCreateDto)
+    public async Task<IActionResult> Create([FromBody] GenreCreateDto genreCreateDto)
     {
-        try
-        {
-            var result = await _service.CreateGenreAsync(genreCreateDto);
+        var validationResult = await _genreCreateDtoValidator.ValidateAsync(genreCreateDto);
 
-            if (!result.IsSuccess)
-                return BadRequest(result);
-
-            return Created($"/api/genres/{result.Data?.Id}", result);
-        }
-        catch (Exception ex)
+        if (!validationResult.IsValid)
         {
-            return BadRequest(ex.Message);
+            var validatorErrors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+            var validatorResponse = ApiResponseDto<GenreCreateDto>.ErrorResponse("Invalid input.", validatorErrors);
+            return BadRequest(validatorResponse);
         }
+
+        var response = await _service.CreateAsync(genreCreateDto);
+
+        if (!response.Success)
+            return NotFound(response);
+
+        return Created($"/api/genres/{response.Data?.Id}", response);
     }
 
     [HttpPut("{id}")]
     [SwaggerOperation(Summary = "Update genre")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Update(Guid id, GenreUpdateDto genreUpdateDto)
+    public async Task<IActionResult> Update(Guid id, [FromBody] GenreUpdateDto genreUpdateDto)
     {
-        try
-        {
-            var result = await _service.UpdateGenreAsync(id, genreUpdateDto);
+        var validationResult = await _genreUpdateDtoValidator.ValidateAsync(genreUpdateDto);
 
-            if (!result.IsSuccess)
-                return BadRequest(result);
-
-            return Ok(result);
-        }
-        catch (Exception ex)
+        if (!validationResult.IsValid)
         {
-            return BadRequest(ex.Message);
+            var validatorErrors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+            var validatorResponse = ApiResponseDto<GenreUpdateDto>.ErrorResponse("Invalid input.", validatorErrors);
+            return BadRequest(validatorResponse);
         }
+
+        var response = await _service.UpdateAsync(id, genreUpdateDto);
+
+        if (!response.Success)
+            return NotFound(response);
+
+        return Ok(response);
     }
 
     [HttpDelete("{id}")]
     [SwaggerOperation(Summary = "Delete genre")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id)
     {
-        try
-        {
-            var result = await _service.DeleteGenreAsync(id);
+        var response = await _service.DeleteAsync(id);
 
-            if (!result.IsSuccess)
-                return BadRequest(result);
+        if (!response.Success)
+            return NotFound(response);
 
-            return NoContent();
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        return Ok(response);
     }
 }

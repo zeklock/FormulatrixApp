@@ -14,16 +14,16 @@ public class GameRepository : IGameRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Game>> GetAllGamesAsync()
+    public async Task<List<Game>> GetAllAsync()
     {
-        IEnumerable<Game> data = await _context.Games
+        List<Game> data = await _context.Games
             .Include(g => g.Genre)
             .ToListAsync();
 
         return data;
     }
 
-    public async Task<Game?> GetGameByIdAsync(Guid id)
+    public async Task<Game?> GetByIdAsync(Guid id)
     {
         Game? data = await _context.Games
             .Include(g => g.Genre)
@@ -32,98 +32,64 @@ public class GameRepository : IGameRepository
         return data;
     }
 
-    public async Task<Game> CreateGameAsync(Game game)
+    public async Task<Game> CreateAsync(Game game)
     {
-        try
+        if (game.GenreId is not null)
         {
-            game.CreatedAt = DateTime.Now;
-            game.UpdatedAt = DateTime.Now;
+            Genre? genre = await _context.Genres
+                .FirstOrDefaultAsync(g => g.Id == game.GenreId);
 
-            if (game.GenreId is not null)
+            if (genre is not null)
             {
-                Genre? genre = await _context.Genres
-                    .FirstOrDefaultAsync(g => g.Id == game.GenreId);
-
-                if (genre is not null)
-                {
-                    game.Genre = genre;
-                }
-                else
-                {
-                    game.GenreId = null;
-                }
+                game.GenreId = genre.Id;
+                game.Genre = genre;
             }
-
-            _context.Games.Add(game);
-            await _context.SaveChangesAsync();
-
-            return game;
-        }
-        catch
-        {
-            throw;
-        }
-    }
-
-    public async Task<Game?> UpdateGameAsync(Guid id, Game game)
-    {
-        try
-        {
-            Game? data = await _context.Games.FirstOrDefaultAsync(g => g.Id == id);
-
-            if (data is null)
-                return data;
-
-            if (game.GenreId is not null)
+            else
             {
-                Genre? genre = await _context.Genres
-                    .FirstOrDefaultAsync(g => g.Id == game.GenreId);
-
-                if (genre is not null)
-                {
-                    data.GenreId = genre.Id;
-                    data.Genre = genre;
-                }
-                else
-                {
-                    data.GenreId = null;
-                }
+                game.GenreId = null;
+                game.Genre = null;
             }
-
-            data.Title = game.Title;
-            data.ReleaseYear = game.ReleaseYear;
-            data.UpdatedAt = DateTime.Now;
-            await _context.SaveChangesAsync();
-
-            return data;
         }
-        catch
-        {
-            throw;
-        }
+
+        _context.Games.Add(game);
+        await _context.SaveChangesAsync();
+
+        return game;
     }
 
-    public async Task<bool> DeleteGameAsync(Guid id)
+    public async Task<Game?> UpdateAsync(Game game)
     {
-        try
+        if (game.GenreId is not null)
         {
-            Game? data = await _context.Games.FirstOrDefaultAsync(g => g.Id == id);
+            Genre? genre = await _context.Genres
+                .FirstOrDefaultAsync(g => g.Id == game.GenreId);
 
-            if (data is null)
-                return false;
-
-            _context.Games.Remove(data);
-            await _context.SaveChangesAsync();
-
-            return true;
+            if (genre is not null)
+            {
+                game.GenreId = genre.Id;
+                game.Genre = genre;
+            }
+            else
+            {
+                game.GenreId = null;
+                game.Genre = null;
+            }
         }
-        catch
-        {
-            throw;
-        }
+
+        game.UpdatedAt = DateTime.Now;
+        _context.Games.Update(game);
+        await _context.SaveChangesAsync();
+
+        return game;
     }
 
-    public async Task<bool> TitleExistsAsync(string title, Guid? exceptId = null)
+    public async Task DeleteAsync(Game game)
+    {
+        _context.Games.Remove(game);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<bool> IsTitleExistsAsync(string title, Guid? exceptId = null)
     {
         bool result = await _context.Games
             .Where(g => g.Id != exceptId)

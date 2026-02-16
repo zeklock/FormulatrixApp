@@ -1,4 +1,5 @@
 using AutoMapper;
+using CrudApi.Dtos;
 using CrudApi.Dtos.Games;
 using CrudApi.Entities;
 using CrudApi.Interfaces;
@@ -16,66 +17,108 @@ public class GameService : IGameService
         _mapper = mapper;
     }
 
-    public async Task<ServiceResult<IEnumerable<GameDto>>> GetAllGamesAsync()
+    public async Task<ApiResponseDto<List<GameDto>>> GetAllAsync()
     {
-        IEnumerable<Game> games = await _repository.GetAllGamesAsync();
-        IEnumerable<GameDto> results = games
-            .Select(_mapper.Map<GameDto>)
-            .ToList();
+        try
+        {
+            List<Game> games = await _repository.GetAllAsync();
+            List<GameDto> results = games
+                .Select(_mapper.Map<GameDto>)
+                .ToList();
 
-        return ServiceResult<IEnumerable<GameDto>>.Success(results);
+            return ApiResponseDto<List<GameDto>>.SuccessResponse(results);
+        }
+        catch
+        {
+            return ApiResponseDto<List<GameDto>>.ErrorResponse("Failed to get data.");
+        }
     }
 
-    public async Task<ServiceResult<GameDto?>> GetGameByIdAsync(Guid id)
+    public async Task<ApiResponseDto<GameDto?>> GetByIdAsync(Guid id)
     {
-        Game? game = await _repository.GetGameByIdAsync(id);
+        try
+        {
+            Game? game = await _repository.GetByIdAsync(id);
 
-        if (game is null)
-            return ServiceResult<GameDto?>.Failure("No game found.");
+            if (game is null)
+                return ApiResponseDto<GameDto?>.ErrorResponse("No game found.");
 
-        GameDto result = _mapper.Map<GameDto>(game);
+            GameDto result = _mapper.Map<GameDto>(game);
 
-        return ServiceResult<GameDto?>.Success(result);
+            return ApiResponseDto<GameDto?>.SuccessResponse(result);
+        }
+        catch
+        {
+            return ApiResponseDto<GameDto?>.ErrorResponse("Failed to get data.");
+        }
     }
 
-    public async Task<ServiceResult<GameDto>> CreateGameAsync(GameCreateDto gameCreateDto)
+    public async Task<ApiResponseDto<GameDto>> CreateAsync(GameCreateDto gameCreateDto)
     {
-        bool titleExists = await _repository.TitleExistsAsync(gameCreateDto.Title);
+        try
+        {
+            bool titleExists = await _repository.IsTitleExistsAsync(gameCreateDto.Title);
 
-        if (titleExists)
-            return ServiceResult<GameDto>.Failure("Title already exists.");
+            if (titleExists)
+                return ApiResponseDto<GameDto>.ErrorResponse("Title already exists.");
 
-        Game newGame = await _repository.CreateGameAsync(_mapper.Map<Game>(gameCreateDto));
+            Game game = _mapper.Map<Game>(gameCreateDto);
 
-        GameDto result = _mapper.Map<GameDto>(newGame);
+            Game createdGame = await _repository.CreateAsync(game);
 
-        return ServiceResult<GameDto>.Success(result);
+            GameDto result = _mapper.Map<GameDto>(createdGame);
+
+            return ApiResponseDto<GameDto>.SuccessResponse(result, "Create game success.");
+        }
+        catch
+        {
+            return ApiResponseDto<GameDto>.ErrorResponse("Failed to create data.");
+        }
     }
 
-    public async Task<ServiceResult<GameDto?>> UpdateGameAsync(Guid id, GameUpdateDto gameUpdateDto)
+    public async Task<ApiResponseDto<GameDto?>> UpdateAsync(Guid id, GameUpdateDto gameUpdateDto)
     {
-        bool titleExists = await _repository.TitleExistsAsync(gameUpdateDto.Title, id);
+        try
+        {
+            bool titleExists = await _repository.IsTitleExistsAsync(gameUpdateDto.Title, id);
 
-        if (titleExists)
-            return ServiceResult<GameDto?>.Failure("Title already exists.");
+            if (titleExists)
+                return ApiResponseDto<GameDto?>.ErrorResponse("Title already exists.");
 
-        Game? game = await _repository.UpdateGameAsync(id, _mapper.Map<Game>(gameUpdateDto));
+            Game? game = await _repository.GetByIdAsync(id);
 
-        if (game is null)
-            return ServiceResult<GameDto?>.Failure("No game found.");
+            if (game is null)
+                return ApiResponseDto<GameDto?>.ErrorResponse("No game found.");
 
-        GameDto result = _mapper.Map<GameDto>(game);
+            _mapper.Map(gameUpdateDto, game);
+            Game? updatedGame = await _repository.UpdateAsync(game);
 
-        return ServiceResult<GameDto?>.Success(result);
+            GameDto result = _mapper.Map<GameDto>(updatedGame);
+
+            return ApiResponseDto<GameDto?>.SuccessResponse(result, "Update game success.");
+        }
+        catch
+        {
+            return ApiResponseDto<GameDto?>.ErrorResponse("Failed to update data.");
+        }
     }
 
-    public async Task<ServiceResult<bool>> DeleteGameAsync(Guid id)
+    public async Task<ApiResponseDto<bool>> DeleteAsync(Guid id)
     {
-        bool result = await _repository.DeleteGameAsync(id);
+        try
+        {
+            Game? game = await _repository.GetByIdAsync(id);
 
-        if (!result)
-            return ServiceResult<bool>.Failure("No game found.");
+            if (game is null)
+                return ApiResponseDto<bool>.ErrorResponse("No game found.");
 
-        return ServiceResult<bool>.Success(true);
+            await _repository.DeleteAsync(game);
+
+            return ApiResponseDto<bool>.SuccessResponse(true, "Delete game success.");
+        }
+        catch
+        {
+            return ApiResponseDto<bool>.ErrorResponse("Failed to delete data.");
+        }
     }
 }

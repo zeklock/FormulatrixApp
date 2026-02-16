@@ -4,10 +4,10 @@ namespace CrudApi.Interfaces;
 
 public interface IGameRepository
 {
-    public Task<IEnumerable<Game>> GetAllGamesAsync();
-    public Task<Game?> GetGameByIdAsync(Guid id);
-    public Task<Game> CreateGameAsync(Game game);
-    public Task<Game?> UpdateGameAsync(Guid id, Game game);
-    public Task<bool> DeleteGameAsync(Guid id);
-    public Task<bool> TitleExistsAsync(string title, Guid? exceptId = null);
+    public Task<List<Game>> GetAllAsync();
+    public Task<Game?> GetByIdAsync(Guid id);
+    public Task<Game> CreateAsync(Game game);
+    public Task<Game?> UpdateAsync(Game game);
+    public Task DeleteAsync(Game game);
+    public Task<bool> IsTitleExistsAsync(string title, Guid? exceptId = null);
 }

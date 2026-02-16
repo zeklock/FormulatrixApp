@@ -14,16 +14,16 @@ public class GenreRepository : IGenreRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Genre>> GetAllGenresAsync()
+    public async Task<List<Genre>> GetAllAsync()
     {
-        IEnumerable<Genre> data = await _context.Genres
+        List<Genre> data = await _context.Genres
             .Include(g => g.Games)
             .ToListAsync();
 
         return data;
     }
 
-    public async Task<Genre?> GetGenreByIdAsync(Guid id)
+    public async Task<Genre?> GetByIdAsync(Guid id)
     {
         Genre? data = await _context.Genres
             .Include(g => g.Games)
@@ -32,66 +32,30 @@ public class GenreRepository : IGenreRepository
         return data;
     }
 
-    public async Task<Genre> CreateGenreAsync(Genre genre)
+    public async Task<Genre> CreateAsync(Genre genre)
     {
-        try
-        {
-            genre.CreatedAt = DateTime.Now;
-            genre.UpdatedAt = DateTime.Now;
+        _context.Genres.Add(genre);
+        await _context.SaveChangesAsync();
 
-            _context.Genres.Add(genre);
-            await _context.SaveChangesAsync();
-
-            return genre;
-        }
-        catch
-        {
-            throw;
-        }
+        return genre;
     }
 
-    public async Task<Genre?> UpdateGenreAsync(Guid id, Genre genre)
+    public async Task<Genre?> UpdateAsync(Genre genre)
     {
-        try
-        {
-            Genre? data = await _context.Genres.FirstOrDefaultAsync(g => g.Id == id);
+        genre.UpdatedAt = DateTime.Now;
+        _context.Genres.Update(genre);
+        await _context.SaveChangesAsync();
 
-            if (data is null)
-                return data;
-
-            data.Name = genre.Name;
-            data.UpdatedAt = DateTime.Now;
-            await _context.SaveChangesAsync();
-
-            return data;
-        }
-        catch
-        {
-            throw;
-        }
+        return genre;
     }
 
-    public async Task<bool> DeleteGenreAsync(Guid id)
+    public async Task DeleteAsync(Genre genre)
     {
-        try
-        {
-            Genre? data = await _context.Genres.FirstOrDefaultAsync(g => g.Id == id);
-
-            if (data is null)
-                return false;
-
-            _context.Genres.Remove(data);
-            await _context.SaveChangesAsync();
-
-            return true;
-        }
-        catch
-        {
-            throw;
-        }
+        _context.Genres.Remove(genre);
+        await _context.SaveChangesAsync();
     }
 
-    public async Task<bool> NameExistsAsync(string name, Guid? exceptId = null)
+    public async Task<bool> IsNameExistsAsync(string name, Guid? exceptId = null)
     {
         bool result = await _context.Genres
             .Where(g => g.Id != exceptId)
