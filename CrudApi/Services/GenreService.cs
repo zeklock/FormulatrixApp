@@ -1,36 +1,34 @@
 using AutoMapper;
-using CrudApi.Data;
 using CrudApi.Dtos.Genres;
 using CrudApi.Entities;
 using CrudApi.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace CrudApi.Services;
 
 public class GenreService : IGenreService
 {
-    private readonly GameDbContext _context;
+    private readonly IGenreRepository _repository;
     private readonly IMapper _mapper;
 
-    public GenreService(GameDbContext context, IMapper mapper)
+    public GenreService(IGenreRepository repository, IMapper mapper)
     {
-        _context = context;
+        _repository = repository;
         _mapper = mapper;
     }
 
     public async Task<ServiceResult<IEnumerable<GenreDto>>> GetAllGenresAsync()
     {
-        IEnumerable<GenreDto> genres = await _context.Genres
-            .Include(g => g.Games)
-            .Select(g => _mapper.Map<GenreDto>(g))
-            .ToListAsync();
+        IEnumerable<Genre> genres = await _repository.GetAllGenresAsync();
+        IEnumerable<GenreDto> results = genres
+            .Select(_mapper.Map<GenreDto>)
+            .ToList();
 
-        return ServiceResult<IEnumerable<GenreDto>>.Success(genres);
+        return ServiceResult<IEnumerable<GenreDto>>.Success(results);
     }
 
     public async Task<ServiceResult<GenreDto?>> GetGenreByIdAsync(Guid id)
     {
-        Genre? genre = await _context.Genres.FirstOrDefaultAsync(g => g.Id == id);
+        Genre? genre = await _repository.GetGenreByIdAsync(id);
 
         if (genre is null)
             return ServiceResult<GenreDto?>.Failure("No genre found.");
@@ -42,17 +40,12 @@ public class GenreService : IGenreService
 
     public async Task<ServiceResult<GenreDto>> CreateGenreAsync(GenreCreateDto genreCreateDto)
     {
-        bool titleExists = await TitleExistsAsync(genreCreateDto.Name);
+        bool nameExists = await _repository.NameExistsAsync(genreCreateDto.Name);
 
-        if (titleExists)
+        if (nameExists)
             return ServiceResult<GenreDto>.Failure("Name already exists.");
 
-        Genre newGenre = _mapper.Map<Genre>(genreCreateDto);
-        newGenre.CreatedAt = DateTime.Now;
-        newGenre.UpdatedAt = DateTime.Now;
-
-        _context.Genres.Add(newGenre);
-        await _context.SaveChangesAsync();
+        Genre newGenre = await _repository.CreateGenreAsync(_mapper.Map<Genre>(genreCreateDto));
 
         GenreDto result = _mapper.Map<GenreDto>(newGenre);
 
@@ -61,19 +54,15 @@ public class GenreService : IGenreService
 
     public async Task<ServiceResult<GenreDto?>> UpdateGenreAsync(Guid id, GenreUpdateDto genreUpdateDto)
     {
-        bool titleExists = await TitleExistsAsync(genreUpdateDto.Name, id);
+        bool nameExists = await _repository.NameExistsAsync(genreUpdateDto.Name, id);
 
-        if (titleExists)
+        if (nameExists)
             return ServiceResult<GenreDto?>.Failure("Name already exists.");
 
-        Genre? genre = await _context.Genres.FirstOrDefaultAsync(g => g.Id == id);
+        Genre? genre = await _repository.UpdateGenreAsync(id, _mapper.Map<Genre>(genreUpdateDto));
 
         if (genre is null)
             return ServiceResult<GenreDto?>.Failure("No genre found.");
-
-        _mapper.Map(genreUpdateDto, genre);
-        genre.UpdatedAt = DateTime.Now;
-        await _context.SaveChangesAsync();
 
         GenreDto result = _mapper.Map<GenreDto>(genre);
 
@@ -82,23 +71,11 @@ public class GenreService : IGenreService
 
     public async Task<ServiceResult<bool>> DeleteGenreAsync(Guid id)
     {
-        Genre? genre = await _context.Genres.FirstOrDefaultAsync(g => g.Id == id);
+        bool result = await _repository.DeleteGenreAsync(id);
 
-        if (genre is null)
+        if (!result)
             return ServiceResult<bool>.Failure("No genre found.");
 
-        _context.Genres.Remove(genre);
-        await _context.SaveChangesAsync();
-
-        return ServiceResult<bool>.Success();
-    }
-
-    public async Task<bool> TitleExistsAsync(string title, Guid? exceptId = null)
-    {
-        bool result = await _context.Genres
-            .Where(g => g.Id != exceptId)
-            .AnyAsync(g => string.Equals(g.Name.ToLower(), title.ToLower()));
-
-        return result;
+        return ServiceResult<bool>.Success(true);
     }
 }

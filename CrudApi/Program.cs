@@ -2,6 +2,7 @@ using CrudApi.Data;
 using CrudApi.Dtos.Games;
 using CrudApi.Dtos.Genres;
 using CrudApi.Interfaces;
+using CrudApi.Repositories;
 using CrudApi.Services;
 using CrudApi.Validators.Games;
 using CrudApi.Validators.Genres;
@@ -25,6 +26,8 @@ builder.Services.AddDbContext<GameDbContext>(options =>
 // Services
 builder.Services.AddScoped<IGameService, GameService>();
 builder.Services.AddScoped<IGenreService, GenreService>();
+builder.Services.AddScoped<IGameRepository, GameRepository>();
+builder.Services.AddScoped<IGenreRepository, GenreRepository>();
 
 // Mapper
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
