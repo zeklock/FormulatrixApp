@@ -1,4 +1,4 @@
-using CrudApi.Entities;
+using CrudApi.Models;
 
 namespace CrudApi.Interfaces;
 

@@ -2,11 +2,13 @@ using CrudApi.Dtos;
 using CrudApi.Dtos.Genres;
 using CrudApi.Interfaces;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace CrudApi.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("/api/genres")]
 public class GenreController : ControllerBase

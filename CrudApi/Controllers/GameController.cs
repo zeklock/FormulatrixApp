@@ -2,11 +2,13 @@ using CrudApi.Dtos;
 using CrudApi.Dtos.Games;
 using CrudApi.Interfaces;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace CrudApi.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("/api/games")]
 public class GameController : ControllerBase

@@ -1,8 +1,8 @@
 using AutoMapper;
 using CrudApi.Dtos;
 using CrudApi.Dtos.Games;
-using CrudApi.Entities;
 using CrudApi.Interfaces;
+using CrudApi.Models;
 
 namespace CrudApi.Services;
 

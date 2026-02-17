@@ -1,6 +1,6 @@
 using AutoMapper;
 using CrudApi.Dtos.Genres;
-using CrudApi.Entities;
+using CrudApi.Models;
 
 namespace CrudApi.MappingProfiles;
 

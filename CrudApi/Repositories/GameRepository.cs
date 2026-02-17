@@ -1,6 +1,6 @@
 using CrudApi.Data;
-using CrudApi.Entities;
 using CrudApi.Interfaces;
+using CrudApi.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace CrudApi.Repositories;
