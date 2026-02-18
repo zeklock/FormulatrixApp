@@ -1,6 +1,3 @@
-using System.Text.Json.Serialization;
-using CrudApi.Dtos.Games;
-
 namespace CrudApi.Dtos.Genres;
 
 public class GenreDto
