@@ -1,4 +1,5 @@
 using CrudApi.Data;
+using CrudApi.Dtos;
 using CrudApi.Interfaces;
 using CrudApi.Models;
 using Microsoft.EntityFrameworkCore;
@@ -14,13 +15,30 @@ public class GenreRepository : IGenreRepository
         _context = context;
     }
 
-    public async Task<List<Genre>> GetAllAsync()
+    public async Task<PaginateResponseDto<Genre>> GetAllAsync(
+        int page = 1,
+        int size = 10,
+        string? search = null
+    )
     {
-        List<Genre> data = await _context.Genres
+        List<Genre> items = await _context.Genres
+            .Where(g => string.IsNullOrEmpty(search) || g.Name.ToLower().Contains(search.ToLower()))
             .Include(g => g.Games)
+            .Skip((page - 1) * size)
+            .Take(size)
             .ToListAsync();
 
-        return data;
+        int totalCount = await _context.Genres.CountAsync();
+
+        PaginateResponseDto<Genre> result = new PaginateResponseDto<Genre>
+        {
+            Items = items,
+            PageNumber = page,
+            PageSize = size,
+            TotalCount = totalCount
+        };
+
+        return result;
     }
 
     public async Task<Genre?> GetByIdAsync(Guid id)

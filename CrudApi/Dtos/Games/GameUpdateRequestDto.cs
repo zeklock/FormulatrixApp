@@ -1,6 +1,6 @@
 namespace CrudApi.Dtos.Games;
 
-public class GameCreateDto
+public class GameUpdateRequestDto
 {
     public required string Title { get; set; }
     public int ReleaseYear { get; set; } = DateTime.Now.Year;

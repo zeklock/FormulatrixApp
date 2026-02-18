@@ -14,10 +14,14 @@ namespace CrudApi.Controllers;
 public class GameController : ControllerBase
 {
     private readonly IGameService _service;
-    private readonly IValidator<GameCreateDto> _gameCreateDtoValidator;
-    private readonly IValidator<GameUpdateDto> _gameUpdateDtoValidator;
+    private readonly IValidator<GameCreateRequestDto> _gameCreateDtoValidator;
+    private readonly IValidator<GameUpdateRequestDto> _gameUpdateDtoValidator;
 
-    public GameController(IGameService service, IValidator<GameCreateDto> gameCreateDtoValidator, IValidator<GameUpdateDto> gameUpdateDtoValidator)
+    public GameController(
+        IGameService service,
+        IValidator<GameCreateRequestDto> gameCreateDtoValidator,
+        IValidator<GameUpdateRequestDto> gameUpdateDtoValidator
+    )
     {
         _service = service;
         _gameCreateDtoValidator = gameCreateDtoValidator;
@@ -28,9 +32,9 @@ public class GameController : ControllerBase
     [SwaggerOperation(Summary = "Get all games")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery] GameRequestDto request)
     {
-        var response = await _service.GetAllAsync();
+        var response = await _service.GetAllAsync(request);
 
         if (!response.Success)
             return NotFound(response);
@@ -57,14 +61,14 @@ public class GameController : ControllerBase
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Create([FromBody] GameCreateDto gameCreateDto)
+    public async Task<IActionResult> Create([FromBody] GameCreateRequestDto gameCreateDto)
     {
         var validationResult = await _gameCreateDtoValidator.ValidateAsync(gameCreateDto);
 
         if (!validationResult.IsValid)
         {
             var validatorErrors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
-            var validatorResponse = ApiResponseDto<GameCreateDto>.ErrorResponse("Invalid input.", validatorErrors);
+            var validatorResponse = ApiResponseDto<GameCreateRequestDto>.ErrorResponse("Invalid input.", validatorErrors);
             return BadRequest(validatorResponse);
         }
 
@@ -81,14 +85,14 @@ public class GameController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Update(Guid id, [FromBody] GameUpdateDto gameUpdateDto)
+    public async Task<IActionResult> Update(Guid id, [FromBody] GameUpdateRequestDto gameUpdateDto)
     {
         var validationResult = await _gameUpdateDtoValidator.ValidateAsync(gameUpdateDto);
 
         if (!validationResult.IsValid)
         {
             var validatorErrors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
-            var validatorResponse = ApiResponseDto<GameUpdateDto>.ErrorResponse("Invalid input.", validatorErrors);
+            var validatorResponse = ApiResponseDto<GameUpdateRequestDto>.ErrorResponse("Invalid input.", validatorErrors);
             return BadRequest(validatorResponse);
         }
 

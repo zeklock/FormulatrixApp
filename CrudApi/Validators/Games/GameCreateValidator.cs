@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace CrudApi.Validators.Games;
 
-public class GameCreateValidator : AbstractValidator<GameCreateDto>
+public class GameCreateValidator : AbstractValidator<GameCreateRequestDto>
 {
     public GameCreateValidator()
     {

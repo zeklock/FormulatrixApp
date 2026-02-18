@@ -1,4 +1,5 @@
 using CrudApi.Data;
+using CrudApi.Dtos;
 using CrudApi.Interfaces;
 using CrudApi.Models;
 using Microsoft.EntityFrameworkCore;
@@ -14,13 +15,32 @@ public class GameRepository : IGameRepository
         _context = context;
     }
 
-    public async Task<List<Game>> GetAllAsync()
+    public async Task<PaginateResponseDto<Game>> GetAllAsync(
+        int page = 1,
+        int size = 10,
+        string? search = null,
+        Guid? genreId = null
+    )
     {
-        List<Game> data = await _context.Games
+        List<Game> items = await _context.Games
+            .Where(g => string.IsNullOrEmpty(search) || g.Title.ToLower().Contains(search.ToLower()))
+            .Where(g => genreId == null || g.GenreId == genreId)
             .Include(g => g.Genre)
+            .Skip((page - 1) * size)
+            .Take(size)
             .ToListAsync();
 
-        return data;
+        int totalCount = await _context.Games.CountAsync();
+
+        PaginateResponseDto<Game> result = new PaginateResponseDto<Game>
+        {
+            Items = items,
+            PageNumber = page,
+            PageSize = size,
+            TotalCount = totalCount
+        };
+
+        return result;
     }
 
     public async Task<Game?> GetByIdAsync(Guid id)
@@ -76,7 +96,6 @@ public class GameRepository : IGameRepository
             }
         }
 
-        game.UpdatedAt = DateTime.Now;
         _context.Games.Update(game);
         await _context.SaveChangesAsync();
 

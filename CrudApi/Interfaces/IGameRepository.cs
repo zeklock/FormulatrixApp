@@ -1,10 +1,11 @@
+using CrudApi.Dtos;
 using CrudApi.Models;
 
 namespace CrudApi.Interfaces;
 
 public interface IGameRepository
 {
-    public Task<List<Game>> GetAllAsync();
+    public Task<PaginateResponseDto<Game>> GetAllAsync(int page = 1, int size = 10, string? search = null, Guid? genreId = null);
     public Task<Game?> GetByIdAsync(Guid id);
     public Task<Game> CreateAsync(Game game);
     public Task<Game?> UpdateAsync(Game game);

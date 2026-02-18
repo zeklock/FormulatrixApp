@@ -12,7 +12,7 @@ public class GameMappingProfiles : Profile
         CreateMap<Game, GameDto>();
         CreateMap<Genre, GenreDto>();
         CreateMap<GameDto, Game>();
-        CreateMap<GameCreateDto, Game>();
-        CreateMap<GameUpdateDto, Game>();
+        CreateMap<GameCreateRequestDto, Game>();
+        CreateMap<GameUpdateRequestDto, Game>();
     }
 }

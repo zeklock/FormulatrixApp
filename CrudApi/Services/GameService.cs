@@ -17,20 +17,31 @@ public class GameService : IGameService
         _mapper = mapper;
     }
 
-    public async Task<ApiResponseDto<List<GameDto>>> GetAllAsync()
+    public async Task<ApiResponseDto<PaginateResponseDto<GameDto>>> GetAllAsync(GameRequestDto request)
     {
+        int page = request.Page <= 0 ? 1 : request.Page;
+        int size = request.Size > 100 ? 100 : request.Size;
+        string? search = request.Search?.Trim();
+        Guid? genreId = request.GenreId;
+
         try
         {
-            List<Game> games = await _repository.GetAllAsync();
-            List<GameDto> results = games
-                .Select(_mapper.Map<GameDto>)
-                .ToList();
+            PaginateResponseDto<Game> games = await _repository.GetAllAsync(page, size, search, genreId);
+            PaginateResponseDto<GameDto> results = new PaginateResponseDto<GameDto>
+            {
+                Items = games.Items
+                    .Select(_mapper.Map<GameDto>)
+                    .ToList(),
+                PageNumber = games.PageNumber,
+                PageSize = games.PageSize,
+                TotalCount = games.TotalCount
+            };
 
-            return ApiResponseDto<List<GameDto>>.SuccessResponse(results);
+            return ApiResponseDto<PaginateResponseDto<GameDto>>.SuccessResponse(results);
         }
         catch
         {
-            return ApiResponseDto<List<GameDto>>.ErrorResponse("Failed to get data.");
+            return ApiResponseDto<PaginateResponseDto<GameDto>>.ErrorResponse("Failed to get data.");
         }
     }
 
@@ -53,16 +64,16 @@ public class GameService : IGameService
         }
     }
 
-    public async Task<ApiResponseDto<GameDto>> CreateAsync(GameCreateDto gameCreateDto)
+    public async Task<ApiResponseDto<GameDto>> CreateAsync(GameCreateRequestDto request)
     {
         try
         {
-            bool titleExists = await _repository.IsTitleExistsAsync(gameCreateDto.Title);
+            bool titleExists = await _repository.IsTitleExistsAsync(request.Title);
 
             if (titleExists)
                 return ApiResponseDto<GameDto>.ErrorResponse("Title already exists.");
 
-            Game game = _mapper.Map<Game>(gameCreateDto);
+            Game game = _mapper.Map<Game>(request);
 
             Game createdGame = await _repository.CreateAsync(game);
 
@@ -76,11 +87,11 @@ public class GameService : IGameService
         }
     }
 
-    public async Task<ApiResponseDto<GameDto?>> UpdateAsync(Guid id, GameUpdateDto gameUpdateDto)
+    public async Task<ApiResponseDto<GameDto?>> UpdateAsync(Guid id, GameUpdateRequestDto request)
     {
         try
         {
-            bool titleExists = await _repository.IsTitleExistsAsync(gameUpdateDto.Title, id);
+            bool titleExists = await _repository.IsTitleExistsAsync(request.Title, id);
 
             if (titleExists)
                 return ApiResponseDto<GameDto?>.ErrorResponse("Title already exists.");
@@ -90,7 +101,7 @@ public class GameService : IGameService
             if (game is null)
                 return ApiResponseDto<GameDto?>.ErrorResponse("No game found.");
 
-            _mapper.Map(gameUpdateDto, game);
+            _mapper.Map(request, game);
             Game? updatedGame = await _repository.UpdateAsync(game);
 
             GameDto result = _mapper.Map<GameDto>(updatedGame);

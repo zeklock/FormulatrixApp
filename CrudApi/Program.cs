@@ -29,10 +29,10 @@ builder.Services.AddScoped<IGameRepository, GameRepository>();
 builder.Services.AddScoped<IGenreRepository, GenreRepository>();
 
 // Validator
-builder.Services.AddScoped<IValidator<GameCreateDto>, GameCreateValidator>();
-builder.Services.AddScoped<IValidator<GameUpdateDto>, GameUpdateValidator>();
-builder.Services.AddScoped<IValidator<GenreCreateDto>, GenreCreateValidator>();
-builder.Services.AddScoped<IValidator<GenreUpdateDto>, GenreUpdateValidator>();
+builder.Services.AddScoped<IValidator<GameCreateRequestDto>, GameCreateValidator>();
+builder.Services.AddScoped<IValidator<GameUpdateRequestDto>, GameUpdateValidator>();
+builder.Services.AddScoped<IValidator<GenreCreateRequestDto>, GenreCreateValidator>();
+builder.Services.AddScoped<IValidator<GenreUpdateRequestDto>, GenreUpdateValidator>();
 
 // Mapper
 builder.Services.AddAutoMapper(typeof(Program).Assembly);

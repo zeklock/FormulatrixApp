@@ -17,20 +17,30 @@ public class GenreService : IGenreService
         _mapper = mapper;
     }
 
-    public async Task<ApiResponseDto<List<GenreDto>>> GetAllAsync()
+    public async Task<ApiResponseDto<PaginateResponseDto<GenreDto>>> GetAllAsync(GenreRequestDto request)
     {
+        int page = request.Page <= 0 ? 1 : request.Page;
+        int size = request.Size > 100 ? 100 : request.Size;
+        string? search = request.Search?.Trim();
+
         try
         {
-            List<Genre> genres = await _repository.GetAllAsync();
-            List<GenreDto> results = genres
-                .Select(_mapper.Map<GenreDto>)
-                .ToList();
+            PaginateResponseDto<Genre> genres = await _repository.GetAllAsync(page, size, search);
+            PaginateResponseDto<GenreDto> results = new PaginateResponseDto<GenreDto>
+            {
+                Items = genres.Items
+                    .Select(_mapper.Map<GenreDto>)
+                    .ToList(),
+                PageNumber = genres.PageNumber,
+                PageSize = genres.PageSize,
+                TotalCount = genres.TotalCount
+            };
 
-            return ApiResponseDto<List<GenreDto>>.SuccessResponse(results);
+            return ApiResponseDto<PaginateResponseDto<GenreDto>>.SuccessResponse(results);
         }
         catch
         {
-            return ApiResponseDto<List<GenreDto>>.ErrorResponse("Failed to get data.");
+            return ApiResponseDto<PaginateResponseDto<GenreDto>>.ErrorResponse("Failed to get data.");
         }
     }
 
@@ -53,16 +63,16 @@ public class GenreService : IGenreService
         }
     }
 
-    public async Task<ApiResponseDto<GenreDto>> CreateAsync(GenreCreateDto genreCreateDto)
+    public async Task<ApiResponseDto<GenreDto>> CreateAsync(GenreCreateRequestDto request)
     {
         try
         {
-            bool nameExists = await _repository.IsNameExistsAsync(genreCreateDto.Name);
+            bool nameExists = await _repository.IsNameExistsAsync(request.Name);
 
             if (nameExists)
                 return ApiResponseDto<GenreDto>.ErrorResponse("Name already exists.");
 
-            Genre genre = _mapper.Map<Genre>(genreCreateDto);
+            Genre genre = _mapper.Map<Genre>(request);
 
             Genre createdGenre = await _repository.CreateAsync(genre);
 
@@ -76,11 +86,11 @@ public class GenreService : IGenreService
         }
     }
 
-    public async Task<ApiResponseDto<GenreDto?>> UpdateAsync(Guid id, GenreUpdateDto genreUpdateDto)
+    public async Task<ApiResponseDto<GenreDto?>> UpdateAsync(Guid id, GenreUpdateRequestDto request)
     {
         try
         {
-            bool nameExists = await _repository.IsNameExistsAsync(genreUpdateDto.Name);
+            bool nameExists = await _repository.IsNameExistsAsync(request.Name);
 
             if (nameExists)
                 return ApiResponseDto<GenreDto?>.ErrorResponse("Name already exists.");
@@ -90,7 +100,7 @@ public class GenreService : IGenreService
             if (genre is null)
                 return ApiResponseDto<GenreDto?>.ErrorResponse("No genre found.");
 
-            _mapper.Map(genreUpdateDto, genre);
+            _mapper.Map(request, genre);
             Genre? updatedGenre = await _repository.UpdateAsync(genre);
 
             GenreDto result = _mapper.Map<GenreDto>(updatedGenre);

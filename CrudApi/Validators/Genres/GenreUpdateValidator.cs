@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace CrudApi.Validators.Genres;
 
-public class GenreUpdateValidator : AbstractValidator<GenreUpdateDto>
+public class GenreUpdateValidator : AbstractValidator<GenreUpdateRequestDto>
 {
     public GenreUpdateValidator()
     {
